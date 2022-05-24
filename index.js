@@ -43,6 +43,18 @@ async function run() {
             res.send(result);
         })
 
+        app.put("/updateQuantity", async (req, res) => {
+            const newQuantity = req.body.quantity;
+            const id = req.body.id;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: { quantity: newQuantity }
+            }
+            const result = await partsCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+
+        })
 
 
 
