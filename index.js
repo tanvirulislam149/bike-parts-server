@@ -68,6 +68,13 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/headerName/:email", async (req, res) => {
+            const email = req.params;
+            const query = email;
+            const result = await usersCollection.findOne(query);
+            res.send(result);
+        })
+
 
 
     } finally {
