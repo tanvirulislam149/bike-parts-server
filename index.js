@@ -127,6 +127,54 @@ async function run() {
             res.send(result);
         })
 
+        app.put("/updateOrder", async (req, res) => {
+            const id = req.body.orderId;
+            const transId = req.body.transactionId;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    pay: "paid",
+                    transactionId: transId,
+                }
+            }
+            const result = await ordersCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+        app.get("/userData/:email", async (req, res) => {
+            const email = req.params;
+            const query = email;
+            const result = await usersCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.put("/updateUser", async (req, res) => {
+            const { email, address, phone, education } = req.body;
+            const filter = { email: email }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    address,
+                    phone,
+                    education
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+        app.put("/makeAdmin/:id", async (req, res) => {
+            const id = req.params;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: { role: "admin" }
+            }
+            const result = await usersCollection.updateOne(filter, options, updateDoc);
+            res.send(result);
+        })
+
 
     } finally {
     }
