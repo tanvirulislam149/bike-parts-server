@@ -190,6 +190,12 @@ async function run() {
             res.send(result);
         })
 
+        app.post("/parts", async (req, res) => {
+            const product = req.body;
+            const result = await partsCollection.insertOne(product);
+            res.send(result);
+        })
+
 
     } finally {
     }
