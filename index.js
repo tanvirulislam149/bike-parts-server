@@ -183,6 +183,13 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/checkAdmin/:email", async (req, res) => {
+            const { email } = req.params;
+            const filter = { email: email };
+            const result = await usersCollection.findOne(filter);
+            res.send(result);
+        })
+
 
     } finally {
     }
