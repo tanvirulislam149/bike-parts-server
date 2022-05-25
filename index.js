@@ -164,14 +164,22 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/allUser", async (req, res) => {
+            const query = {};
+            const cursor = usersCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         app.put("/makeAdmin/:id", async (req, res) => {
-            const id = req.params;
+            const { id } = req.params;
+            console.log(id);
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: { role: "admin" }
             }
-            const result = await usersCollection.updateOne(filter, options, updateDoc);
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
 
