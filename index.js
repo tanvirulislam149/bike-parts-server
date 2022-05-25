@@ -3,6 +3,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 require('dotenv').config();
+const stripe = require("stripe")(process.env.SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -25,6 +26,20 @@ async function run() {
             res.send("Auto Parts Company");
         })
 
+        app.post("/create-payment-intent", async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const money = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: money,
+                currency: "usd",
+                payment_method_types: ["card"]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        })
+
         app.get("/parts", async (req, res) => {
             const query = {};
             const cursor = partsCollection.find(query);
@@ -34,7 +49,6 @@ async function run() {
 
         app.get("/purchase/:partsId", async (req, res) => {
             const id = req.params.partsId;
-            console.log(id);
             const query = { _id: ObjectId(id) };
             const result = await partsCollection.findOne(query);
             res.send(result);
