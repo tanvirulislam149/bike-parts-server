@@ -33,6 +33,7 @@ async function run() {
 
         app.get("/purchase/:partsId", async (req, res) => {
             const id = req.params.partsId;
+            console.log(id);
             const query = { _id: ObjectId(id) };
             const result = await partsCollection.findOne(query);
             res.send(result);
@@ -80,6 +81,21 @@ async function run() {
             const query = email;
             const cursor = ordersCollection.find(query);
             const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get("/orders", async (req, res) => {
+            const email = req.query.email;
+            const id = req.query.id;
+            const query = { _id: ObjectId(id), email: email };
+            const result = await ordersCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.get("/deleteOrder/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await ordersCollection.deleteOne(query);
             res.send(result);
         })
 
