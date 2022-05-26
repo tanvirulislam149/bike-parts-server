@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 require('dotenv').config();
@@ -9,6 +10,23 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
+
+
+function verifyJWT(req, res, next) {
+    const authHeaders = req.headers.authorization;
+    if (!authHeaders) {
+        return res.status(401).send({ message: "unauthorized access" })
+    }
+    jwt.verify(authHeaders, process.env.SECRET_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: "Forbidden Access" })
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.idgn7.mongodb.net/?retryWrites=true&w=majority`;
@@ -25,6 +43,16 @@ async function run() {
         app.get("/", async (req, res) => {
             res.send("Auto Parts Company");
         })
+
+
+        app.post("/getToken/:email", async (req, res) => {
+            const { email } = req.params;
+            const user = req.body;
+            const token = jwt.sign(user, process.env.JWT_TOKEN, { expiresIn: "1d" });
+            res.send({ token });
+        })
+
+
 
         app.post("/create-payment-intent", async (req, res) => {
             const order = req.body;
