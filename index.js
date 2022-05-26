@@ -99,7 +99,7 @@ async function run() {
             res.send(result);
         })
 
-        app.put("/updateQuantity", async (req, res) => {
+        app.put("/updateQuantity", verifyJWT, async (req, res) => {
             const newQuantity = req.body.quantity;
             const id = req.body.id;
             const filter = { _id: ObjectId(id) };
@@ -123,14 +123,14 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/headerName/:email", verifyJWT, async (req, res) => {
+        app.get("/headerName/:email", async (req, res) => {
             const email = req.params;
             const query = email;
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
 
-        app.get("/orders/:email", verifyJWT, async (req, res) => {
+        app.get("/orders/:email", async (req, res) => {
             const email = req.params;
             const query = email;
             const cursor = ordersCollection.find(query);
@@ -146,7 +146,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/deleteOrder/:id", async (req, res) => {
+        app.get("/deleteOrder/:id", verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await ordersCollection.deleteOne(query);
@@ -166,7 +166,7 @@ async function run() {
             res.send(result);
         })
 
-        app.put("/updateOrder", verifyJWT, verifyAdmin, async (req, res) => {
+        app.put("/updateOrder", async (req, res) => {
             const id = req.body.orderId;
             const transId = req.body.transactionId;
             const filter = { _id: ObjectId(id) }
@@ -182,14 +182,14 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/userData/:email", verifyJWT, async (req, res) => {
+        app.get("/userData/:email", async (req, res) => {
             const email = req.params;
             const query = email;
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
 
-        app.put("/updateUser", verifyJWT, async (req, res) => {
+        app.put("/updateUser", async (req, res) => {
             const { email, address, phone, education } = req.body;
             const filter = { email: email }
             const options = { upsert: true }
@@ -223,7 +223,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/checkAdmin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+        app.get("/checkAdmin/:email", verifyJWT, async (req, res) => {
             const { email } = req.params;
             const filter = { email: email };
             const result = await usersCollection.findOne(filter);
