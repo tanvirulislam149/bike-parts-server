@@ -146,7 +146,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/deleteOrder/:id", verifyJWT, async (req, res) => {
+        app.get("/deleteOrder/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await ordersCollection.deleteOne(query);
