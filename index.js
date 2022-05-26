@@ -17,7 +17,7 @@ function verifyJWT(req, res, next) {
     if (!authHeaders) {
         return res.status(401).send({ message: "unauthorized access" })
     }
-    jwt.verify(authHeaders, process.env.SECRET_TOKEN, function (err, decoded) {
+    jwt.verify(authHeaders, process.env.JWT_TOKEN, function (err, decoded) {
         if (err) {
             return res.status(403).send({ message: "Forbidden Access" })
         }
@@ -45,8 +45,19 @@ async function run() {
         })
 
 
-        app.post("/getToken/:email", async (req, res) => {
-            const { email } = req.params;
+        const verifyAdmin = async (req, res, next) => {
+            const user = req.decoded.email;
+            const userAccount = await usersCollection.findOne({ email: user });
+            if (userAccount.role === 'admin') {
+                next();
+            }
+            else {
+                res.status(403).send({ message: 'forbidden' });
+            }
+        }
+
+
+        app.post("/getToken", async (req, res) => {
             const user = req.body;
             const token = jwt.sign(user, process.env.JWT_TOKEN, { expiresIn: "1d" });
             res.send({ token });
@@ -75,7 +86,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/purchase/:partsId", async (req, res) => {
+        app.get("/purchase/:partsId", verifyJWT, async (req, res) => {
             const id = req.params.partsId;
             const query = { _id: ObjectId(id) };
             const result = await partsCollection.findOne(query);
@@ -112,14 +123,14 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/headerName/:email", async (req, res) => {
+        app.get("/headerName/:email", verifyJWT, async (req, res) => {
             const email = req.params;
             const query = email;
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
 
-        app.get("/orders/:email", async (req, res) => {
+        app.get("/orders/:email", verifyJWT, async (req, res) => {
             const email = req.params;
             const query = email;
             const cursor = ordersCollection.find(query);
@@ -127,7 +138,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/orders", async (req, res) => {
+        app.get("/orders", verifyJWT, async (req, res) => {
             const email = req.query.email;
             const id = req.query.id;
             const query = { _id: ObjectId(id), email: email };
@@ -155,7 +166,7 @@ async function run() {
             res.send(result);
         })
 
-        app.put("/updateOrder", async (req, res) => {
+        app.put("/updateOrder", verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.body.orderId;
             const transId = req.body.transactionId;
             const filter = { _id: ObjectId(id) }
@@ -171,14 +182,14 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/userData/:email", async (req, res) => {
+        app.get("/userData/:email", verifyJWT, async (req, res) => {
             const email = req.params;
             const query = email;
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
 
-        app.put("/updateUser", async (req, res) => {
+        app.put("/updateUser", verifyJWT, async (req, res) => {
             const { email, address, phone, education } = req.body;
             const filter = { email: email }
             const options = { upsert: true }
@@ -193,14 +204,14 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/allUser", async (req, res) => {
+        app.get("/allUser", verifyJWT, verifyAdmin, async (req, res) => {
             const query = {};
             const cursor = usersCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        app.put("/makeAdmin/:id", async (req, res) => {
+        app.put("/makeAdmin/:id", verifyJWT, verifyAdmin, async (req, res) => {
             const { id } = req.params;
             console.log(id);
             const filter = { _id: ObjectId(id) };
@@ -212,27 +223,27 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/checkAdmin/:email", async (req, res) => {
+        app.get("/checkAdmin/:email", verifyJWT, verifyAdmin, async (req, res) => {
             const { email } = req.params;
             const filter = { email: email };
             const result = await usersCollection.findOne(filter);
             res.send(result);
         })
 
-        app.post("/parts", async (req, res) => {
+        app.post("/parts", verifyJWT, verifyAdmin, async (req, res) => {
             const product = req.body;
             const result = await partsCollection.insertOne(product);
             res.send(result);
         })
 
-        app.get("/allOrders", async (req, res) => {
+        app.get("/allOrders", verifyJWT, verifyAdmin, async (req, res) => {
             const query = {};
             const cursor = ordersCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        app.get("/shipped/:id", async (req, res) => {
+        app.get("/shipped/:id", verifyJWT, verifyAdmin, async (req, res) => {
             const { id } = req.params;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true }
@@ -245,14 +256,14 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/cancelOrder/:id", async (req, res) => {
+        app.get("/cancelOrder/:id", verifyJWT, verifyAdmin, async (req, res) => {
             const { id } = req.params;
             const query = { _id: ObjectId(id) }
             const result = await ordersCollection.deleteOne(query);
             res.send(result);
         })
 
-        app.get("/deleteProduct/:id", async (req, res) => {
+        app.get("/deleteProduct/:id", verifyJWT, verifyAdmin, async (req, res) => {
             const { id } = req.params;
             const query = { _id: ObjectId(id) }
             const result = await partsCollection.deleteOne(query);
