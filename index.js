@@ -136,6 +136,7 @@ async function run() {
                 $set: {
                     pay: "paid",
                     transactionId: transId,
+                    status: "Pending"
                 }
             }
             const result = await ordersCollection.updateOne(filter, updateDoc, options);
@@ -193,6 +194,40 @@ async function run() {
         app.post("/parts", async (req, res) => {
             const product = req.body;
             const result = await partsCollection.insertOne(product);
+            res.send(result);
+        })
+
+        app.get("/allOrders", async (req, res) => {
+            const query = {};
+            const cursor = ordersCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get("/shipped/:id", async (req, res) => {
+            const { id } = req.params;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    status: "Shipped",
+                }
+            }
+            const result = await ordersCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+        app.get("/cancelOrder/:id", async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) }
+            const result = await ordersCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        app.get("/deleteProduct/:id", async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) }
+            const result = await partsCollection.deleteOne(query);
             res.send(result);
         })
 
