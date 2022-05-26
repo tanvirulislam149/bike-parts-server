@@ -93,7 +93,7 @@ async function run() {
             res.send(result);
         })
 
-        app.post("/orders", async (req, res) => {
+        app.post("/orders", verifyJWT, async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.send(result);
@@ -223,7 +223,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/checkAdmin/:email", verifyJWT, async (req, res) => {
+        app.get("/checkAdmin/:email", async (req, res) => {
             const { email } = req.params;
             const filter = { email: email };
             const result = await usersCollection.findOne(filter);
