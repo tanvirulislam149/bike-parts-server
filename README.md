@@ -10,7 +10,7 @@ A Bike Parts Manufacturer company's website for hessle free shopping for your bi
 
 - Admin Credential
 
-        Email - admin@gmail.com <br/>
+        Email - admin@gmail.com
         Password - asdfasdf
 
 ## Features
