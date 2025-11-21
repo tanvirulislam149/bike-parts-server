@@ -10,7 +10,7 @@ A Bike Parts Manufacturer company's website made with MERN Stack technology for 
 
 - Admin Credential
 
-        Email - admin@gmail.com <br/>
+        Email - admin@gmail.com
         Password - asdfasdf
 
 ## Features
