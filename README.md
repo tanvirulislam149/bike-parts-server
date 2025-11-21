@@ -1,6 +1,6 @@
 # BikeParts Manufacturer Ltd.
 
-A Bike Parts Manufacturer company's website for hessle free shopping for your bike. It is perfectly designed for bikers to make their bike and also admin to manage everything.
+A Bike Parts Manufacturer company's website made with MERN Stack technology for hessle free shopping for your bike. It is perfectly designed for bikers to make their bike and also admin to manage everything.
 
 ## Live Website
 
