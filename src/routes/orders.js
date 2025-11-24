@@ -1,3 +1,9 @@
+const express = require("express");
+const router = express.Router();
+const { getCollection } = require("../db");
+const verifyJWT = require("../middleware/verifyJWT");
+const verifyAdmin = require("../middleware/verifyAdmin");
+
 router.post("/orders", verifyJWT, async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
