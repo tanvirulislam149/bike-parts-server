@@ -15,11 +15,10 @@ router.post("/orders", verifyJWT, async (req, res, next) => {
   }
 });
 
-// GET /orders/:email -- NOTE: original code used req.params as whole object; preserve by matching behavior
 router.get("/orders/:email", async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
-    const query = req.params; // same shape as original
+    const query = req.params;
     const cursor = ordersCollection.find(query);
     const result = await cursor.toArray();
     res.send(result);
@@ -28,7 +27,6 @@ router.get("/orders/:email", async (req, res, next) => {
   }
 });
 
-// GET /orders (protected) -- original finds by query.email and query.id and returns a single order
 router.get("/orders", verifyJWT, async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
@@ -44,7 +42,6 @@ router.get("/orders", verifyJWT, async (req, res, next) => {
   }
 });
 
-// GET /allOrders (admin)
 router.get("/allOrders", verifyJWT, verifyAdmin, async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
@@ -55,7 +52,6 @@ router.get("/allOrders", verifyJWT, verifyAdmin, async (req, res, next) => {
   }
 });
 
-// GET /deleteOrder/:id
 router.get("/deleteOrder/:id", async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
@@ -69,7 +65,6 @@ router.get("/deleteOrder/:id", async (req, res, next) => {
   }
 });
 
-// GET /shipped/:id (admin)
 router.get("/shipped/:id", verifyJWT, verifyAdmin, async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
@@ -85,7 +80,6 @@ router.get("/shipped/:id", verifyJWT, verifyAdmin, async (req, res, next) => {
   }
 });
 
-// GET /cancelOrder/:id (admin)
 router.get(
   "/cancelOrder/:id",
   verifyJWT,
@@ -104,7 +98,6 @@ router.get(
   }
 );
 
-// PUT /updateOrder
 router.put("/updateOrder", async (req, res, next) => {
   try {
     const ordersCollection = getCollection("orders");
